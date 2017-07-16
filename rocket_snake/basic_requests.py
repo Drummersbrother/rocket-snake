@@ -58,7 +58,8 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
             await asyncio.sleep(0.1)
 
         # Now it's our turn
-        # If the last request was less than 2 seconds ago we need to wait
+        # The least amount of time we allow between requests
+        # This is a big optimizer, but the best value depends on a users ping to the api server, so 0.5 is a really safe value
         throughput_time_seconds = 0.5
         if time.time() - ratelimit_key_time_map.get(api_key, 0) < throughput_time_seconds:
             await asyncio.sleep(throughput_time_seconds - (time.time() - ratelimit_key_time_map[api_key]))
@@ -73,7 +74,8 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
                         if handle_ratelimiting:
                             if _cur_retry < 6:
                                 await asyncio.sleep(
-                                    _get_int(response.headers.get("retry-after"), throughput_time_seconds))
+                                    _get_int(response.headers.get("retry-after-ms"),
+                                             throughput_time_seconds * 1000) / 1000)
                                 ratelimit_key_queue_map[api_key].popleft()
                                 return await basic_request(loop=loop, api_key=api_key, timeout_seconds=timeout_seconds,
                                                            endpoint=endpoint, *args, method=method,
