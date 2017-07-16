@@ -7,7 +7,7 @@ from .constants import *
 class RLS_Client(object):
     """Represents the client, does everything. Initialize with api key and some other settings if you want to."""
 
-    def __init__(self, api_key: str = None, auto_rate_limit: bool = False,
+    def __init__(self, api_key: str = None, auto_rate_limit: bool = True,
                  event_loop: asyncio.AbstractEventLoop = None, _api_version: int = 1):
         """Create a client, does not execute any requests.
         Parameters:
@@ -18,7 +18,7 @@ class RLS_Client(object):
             """
 
         if api_key is None:
-            raise custom_exceptions.NoAPIKeyException("No api key was supplied to client initialization.")
+            raise custom_exceptions.NoAPIKeyError("No api key was supplied to client initialization.")
         else:
             self._api_key = api_key
 
@@ -34,9 +34,16 @@ class RLS_Client(object):
     async def get_platforms(self):
         """Returns the supported platforms for the api."""
 
-        raw_season_data = await basic_requests.get_platforms(api_key=self._api_key, api_version=self._api_version,
-                                                             loop=self._event_loop,
-                                                             handle_ratelimiting=self.auto_ratelimit)
+        raw_playlist_data = await basic_requests.get_platforms(api_key=self._api_key, api_version=self._api_version,
+                                                               loop=self._event_loop,
+                                                               handle_ratelimiting=self.auto_ratelimit)
 
-        return [ID_PLATFORM_LUT.get(plat_id, None) for plat_id in [entry["id"] for entry in raw_season_data] if
+        return [ID_PLATFORM_LUT.get(plat_id, None) for plat_id in [entry["id"] for entry in raw_playlist_data] if
                 ID_PLATFORM_LUT.get(plat_id, None) is not None]
+
+    async def get_playlists(self):
+        raw_playlist_data = await basic_requests.get_playlists(api_key=self._api_key, api_version=self._api_version,
+                                                               loop=self._event_loop,
+                                                               handle_ratelimiting=self.auto_ratelimit)
+
+        return raw_playlist_data
