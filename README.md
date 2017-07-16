@@ -1,5 +1,6 @@
 # rocket-snake
-A python async API client for the https://rocketleaguestats.com/ api.
+A python async API client for the https://rocketleaguestats.com/ api. 
+Get an api key [here](https://developers.rocketleaguestats.com/).
 
 ## Status
 Not ready for anything but development
