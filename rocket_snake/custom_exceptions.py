@@ -9,6 +9,10 @@ class APIServerError(ConnectionError):
     pass
 
 
+class APINotFoundError(ConnectionError):
+    pass
+
+
 class APIBadResponseCodeError(ConnectionError):
     pass
 
