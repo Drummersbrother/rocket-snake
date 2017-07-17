@@ -35,7 +35,7 @@ class Playlist(namedtuple("Playlist", ("id", "name", "platform", "population", "
     """
     Represents a playlist. There is a playlist for each unique combination of platform and gamemode.
     Fields:
-        id: int; The id for this platform. Unique for each playlist.
+        id: int; The id for this playlist. Unique for each gamemode, not for each platform.
         name: str; "Gamemode", such as "Ranked Duels" or "Hoops".
         platform: int; The platform this playlist is on.
             Corresponds to the platforms in the module constants.
