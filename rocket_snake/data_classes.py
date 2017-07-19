@@ -73,10 +73,13 @@ class Player(object):
         self.ranked_seasons = processed_ranked_seasons
 
     def __str__(self):
-        return ("Player \'{0}\' with unique id {1}:\n\t"
+        return ("Rocket League player \'{0}\' with unique id {1}:\n\t"
                 "Platform: {2}, id {3}\n\t"
                 "Avatar url: {4}\n\t"
                 "Profile url: {5}\n\t"
                 "Signature url: {6}\n\t"
                 "Stats: {7}".format(self.display_name, self.uid, self.platform, self.platform_id, self.avatar_url,
                                     self.profile_url, self.signature_url, self.stats))
+
+    def __repr__(self):
+        return str(self)

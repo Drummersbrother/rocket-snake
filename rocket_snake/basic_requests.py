@@ -90,7 +90,17 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
                                 "The requested resource could not be found by the RLS API.")
                     elif response.status >= 300:
                         raise custom_exceptions.APIBadResponseCodeError(
-                                "The HTTP response code was {0}, which is not a good one.".format(response.status))
+                                "The HTTP response code was {0}, which is not a good one. \n"
+                                "The response headers were: \n{6}\n"
+                                "The response was: \n{2}\n"
+                                "The query headers were: \n{1}\n"
+                                "The query was a {3} one, and the endpoint was {4}.\n{5}"
+                                    .format(response.status, kwargs["headers"],
+                                            "\n\t".join((await response.text()).split("\n")), method.upper(),
+                                            api_url + endpoint,
+                                            "The json data sent to the endpoint by the API was:\n{0}\n"
+                                            .format(kwargs["json"]) if "json" in kwargs else "",
+                                            dict(response.headers)))
                     return response.status, json.loads(response_text)
     except (asyncio.TimeoutError, json.JSONDecodeError, UnicodeDecodeError) as e:
         # We didn't succeed with loading the url
@@ -116,7 +126,7 @@ def _add_request_parameters(func):
     """A decorator that adds some parameters to the decorated function, so those can be passed to basic_request."""
 
     # The function the decorator returns
-    async def decorated_func(*args, api_key: str = "", handle_ratelimiting: bool = False, timeout_seconds: float = 5,
+    async def decorated_func(*args, api_key: str = "", handle_ratelimiting: bool = False, timeout_seconds: float = 15,
                              api_version: int = 1, loop: asyncio.AbstractEventLoop = None, **kwargs):
         return await func(*args, api_key=api_key, loop=loop,
                           handle_ratelimiting=handle_ratelimiting, api_version=api_version,
@@ -153,16 +163,14 @@ async def get_tiers(*args, api_key: str, loop: asyncio.AbstractEventLoop, api_ve
 
 
 @_add_request_parameters
-async def get_leaderboard(get_stat_instead: bool, playlist_id: int, *args, api_key: str,
-                          loop: asyncio.AbstractEventLoop,
-                          api_version: int = 1, **kwargs):
+async def get_ranked_leaderboard(playlist_id: int, *args, api_key: str,
+                                 loop: asyncio.AbstractEventLoop, api_version: int = 1, **kwargs):
     return (await basic_request(
             loop=loop, api_key=api_key, endpoint="{0}/leaderboard/{1}".format(
-                    api_version, "stat" if get_stat_instead else "ranked"), *args,
+                    api_version, "ranked"), *args,
             params={"playlist_id": playlist_id}, **kwargs))[1]
 
 
-# TODO
 @_add_request_parameters
 async def get_player(unique_id: str, platform_id: int, *args, api_key: str, loop: asyncio.AbstractEventLoop,
                      api_version: int = 1, **kwargs):
@@ -172,16 +180,25 @@ async def get_player(unique_id: str, platform_id: int, *args, api_key: str, loop
             **kwargs))[1]
 
 
-# TODO
 @_add_request_parameters
-async def get_player_batch(api_key: str, loop: asyncio.AbstractEventLoop, api_version: int = 1, *args, **kwargs):
+async def get_player_batch(unique_id_platform_pairs: tuple, *args, api_key: str, loop: asyncio.AbstractEventLoop,
+                           api_version: int = 1, **kwargs):
+    # The json we send needs to be in the form [{"uniqueId": str}, {"platformId": str}, ...]
+    unique_id_platform_pairs = [{"uniqueId": entry[0], "platformId": str(entry[1])} for entry in
+                                unique_id_platform_pairs]
+
     return (await basic_request(
             loop=loop, api_key=api_key, endpoint="{0}/player/batch".format(api_version),
-            *args, method="post", **kwargs))[1]
+            *args, method="post", json=unique_id_platform_pairs,
+            headers={"Accept": "application/json", "Content-Type": "application/json"}, **kwargs))[1]
 
 
 # TODO
 @_add_request_parameters
-async def search_players(api_key: str, loop: asyncio.AbstractEventLoop, api_version: int = 1, *args, **kwargs):
+async def search_players(display_name: str, page: int, *args, api_key: str, loop: asyncio.AbstractEventLoop,
+                         api_version: int = 1,
+                         **kwargs):
     return (await basic_request(
-            loop=loop, api_key=api_key, endpoint="{0}/search/players".format(api_version), *args, **kwargs))[1]
+            loop=loop, api_key=api_key, endpoint="{0}/search/players".format(api_version), *args,
+            params={"display_name": url_parser.quote_plus(display_name, encoding="utf-8"),
+                    "page": page}, **kwargs))[1]
