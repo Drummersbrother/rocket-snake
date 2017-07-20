@@ -90,7 +90,7 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
                                 "The requested resource could not be found by the RLS API.")
                     elif response.status == 401:
                         raise custom_exceptions.InvalidAPIKeyError(
-                                 "The HTTP response code was 401, which means that your API key wasn't valid.")
+                                "The HTTP response code was 401, which means that your API key wasn't valid.")
                     elif response.status >= 300:
                         raise custom_exceptions.APIBadResponseCodeError(
                                 "The HTTP response code was {0}, which is not a good one. \n"
@@ -173,13 +173,15 @@ async def get_ranked_leaderboard(playlist_id: int, *args, api_key: str,
                     api_version), *args,
             params={"playlist_id": playlist_id}, **kwargs))[1]
 
+
 @_add_request_parameters
 async def get_stats_leaderboard(stat_type: str, *args, api_key: str,
-                                 loop: asyncio.AbstractEventLoop, api_version: int = 1, **kwargs):
+                                loop: asyncio.AbstractEventLoop, api_version: int = 1, **kwargs):
     return (await basic_request(
             loop=loop, api_key=api_key, endpoint="{0}/leaderboard/stat".format(
                     api_version), *args,
             params={"type": stat_type}, **kwargs))[1]
+
 
 @_add_request_parameters
 async def get_player(unique_id: str, platform_id: int, *args, api_key: str, loop: asyncio.AbstractEventLoop,
@@ -203,7 +205,6 @@ async def get_player_batch(unique_id_platform_pairs: tuple, *args, api_key: str,
             headers={"Accept": "application/json", "Content-Type": "application/json"}, **kwargs))[1]
 
 
-# TODO
 @_add_request_parameters
 async def search_players(display_name: str, page: int, *args, api_key: str, loop: asyncio.AbstractEventLoop,
                          api_version: int = 1,
