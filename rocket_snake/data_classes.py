@@ -34,16 +34,85 @@ class Season(namedtuple("Season", ("id", "is_current", "time_started", "time_end
 class Playlist(namedtuple("Playlist", ("id", "name", "platform", "population", "last_updated"))):
     """
     Represents a playlist. There is a playlist for each unique combination of platform and gamemode.
-    Fields:
-        id: int; The id for this playlist. Unique for each gamemode, not for each platform.
-        name: str; "Gamemode", such as "Ranked Duels" or "Hoops".
-        platform: int; The platform this playlist is on.
+    :var id: The id for this playlist. Unique for each gamemode, not for each platform.
+    :var name: "Gamemode", such as "Ranked Duels" or "Hoops".
+    :var platform: The platform this playlist is on.
             Corresponds to the platforms in the module constants.
-        population: int; The number of people currently (see last_updated) playing this playlist.
+    :var population: The number of people currently (see last_updated) playing this playlist.
             Note that this only count people on this playlist's platform.
-        last_updated: int; A timestamp (seconds since unix epoch, see output of time.time()) of when the population field was updated.
+    :var last_updated: A timestamp (seconds since unix epoch, see output of time.time()) of when the population field was updated.
     """
     pass
+
+
+class SeasonPlaylistRank(namedtuple("SeasonPlaylistRank", ("rankPoints", "division", "matchesPlayed", "tier"))):
+    pass
+
+
+class RankedSeason(dict):
+    """Represents a single ranked season for a single user."""
+
+    def __getitem__(self, item):
+        if isinstance(item, Playlist):
+            return self[item.id]
+        else:
+            return self[item]
+
+    def __str__(self):
+        return "".join(["\n\tRanked season on playlist {0}: {1}".format(playlist_id, str(rank)) for playlist_id, rank in
+                        self.items()])
+
+
+class RankedSeasons(object):
+    """
+    Represents the ranked data of a user. These can be subscripted by season id or Season object to get data for a 
+    specific season (a RankedSeason object). This object defines some method to be more similar to a dictionary.
+    Do not create these yourself.
+    :var data: The raw dict to convert into this object.
+    """
+
+    def __init__(self, data: dict):
+
+        self.ranked_seasons = {}
+
+        for season_id, ranked_data in data.items():
+            self.ranked_seasons[season_id] = RankedSeason({key: SeasonPlaylistRank(val.get("rankPoints", None),
+                                                                                   val.get("division", None),
+                                                                                   val.get("matchesPlayed", None),
+                                                                                   val.get("tier", None)) for key, val
+                                                           in ranked_data.items()})
+
+    def __getitem__(self, item):
+        if isinstance(item, Season):
+            return self.ranked_seasons[item.id]
+        else:
+            return self.ranked_seasons[item]
+
+    def __contains__(self, item):
+        if isinstance(item, Season):
+            return item.id in self.ranked_seasons
+        else:
+            return item in self.ranked_seasons
+
+    def __len__(self):
+        return len(self.ranked_seasons)
+
+    def __iter__(self):
+        return iter(self.ranked_seasons)
+
+    def __getattr__(self, item):
+        regular_functions = {
+            "__init__": self.__init__,
+            "__getitem__": self.__getitem__,
+            "__contains__": self.__contains__,
+            "__len__": self.__len__,
+            "__iter__": self.__iter__,
+        }
+        return regular_functions.get(item, getattr(self.ranked_seasons, item))
+
+    def __str__(self):
+        return "\n".join(["Season {0}: {1}".format(season_id, str(ranked_season)) for season_id, ranked_season in
+                          self.ranked_seasons.items()])
 
 
 class Player(object):
@@ -53,7 +122,7 @@ class Player(object):
 
     def __init__(self, uid: str, display_name: str, platform: str, avatar_url: str = None, profile_url: str = None,
                  signature_url: str = None,
-                 stats: dict = None, ranked_seasons: dict = None):
+                 stats: dict = None, ranked_seasons: RankedSeasons = None):
         # Our parameters
         self.uid = uid
         self.display_name = display_name
@@ -63,14 +132,7 @@ class Player(object):
         self.profile_url = profile_url
         self.signature_url = signature_url
         self.stats = stats
-
-        # The way ranked_seasons is structured by default is kind of janky since json doesn't support integer keys
-        # We convert all the seasonId and playlistId keys of ranked_seasons into real ints
-        processed_ranked_seasons = {int(season_id):
-                                        {int(playlist_id): playlist_data for playlist_id, playlist_data in
-                                         season_data.items()}
-                                    for season_id, season_data in ranked_seasons.items()}
-        self.ranked_seasons = processed_ranked_seasons
+        self.ranked_seasons = ranked_seasons
 
     def __str__(self):
         return ("Rocket League player \'{0}\' with unique id {1}:\n\t"
@@ -78,8 +140,11 @@ class Player(object):
                 "Avatar url: {4}\n\t"
                 "Profile url: {5}\n\t"
                 "Signature url: {6}\n\t"
-                "Stats: {7}".format(self.display_name, self.uid, self.platform, self.platform_id, self.avatar_url,
-                                    self.profile_url, self.signature_url, self.stats))
+                "Stats: {7}\n\t"
+                "Ranked data: \n\t{8}".format(self.display_name, self.uid, self.platform, self.platform_id,
+                                              self.avatar_url,
+                                              self.profile_url, self.signature_url, self.stats,
+                                              "\n\t".join(str(self.ranked_seasons).split("\n"))))
 
     def __repr__(self):
         return str(self)

@@ -11,13 +11,13 @@ class RLS_Client(object):
                  event_loop: asyncio.AbstractEventLoop = None, _api_version: int = 1):
         """
         Creates a client, does not execute any requests.
-        :param api_key: The key for the https://rocketleaguestats.com api.
+        :param: api_key: The key for the https://rocketleaguestats.com api.
                     If not supplied, an InvalidArgumentException will be thrown.
-        :param auto_rate_limit: If the api should automatically delay execution of request to satisy the default ratelimiting.
+        :param: auto_rate_limit: If the api should automatically delay execution of request to satisy the default ratelimiting.
                     Default False. Set to True to enable rate-limiting.
-        :param event_loop: The asyncio event loop that should be used.
+        :param: event_loop: The asyncio event loop that should be used.
                     If not supplied, the default one returned by asyncio.get_event_loop() is used.
-        :param_api_version: What version endpoint to use.
+        :param:_api_version: What version endpoint to use.
                     Do not change if you don't know what you're doing. Default is 1.
         """
 
@@ -37,7 +37,7 @@ class RLS_Client(object):
 
     async def get_platforms(self):
         """
-        :return the supported platforms for the api.
+        :return: the supported platforms for the api.
         """
 
         raw_playlist_data = await basic_requests.get_platforms(api_key=self._api_key, api_version=self._api_version,
@@ -49,7 +49,7 @@ class RLS_Client(object):
 
     async def get_playlists(self):
         """
-        :return a list of data_classes.Playlists.
+        :return: a list of data_classes.Playlists.
         """
         raw_playlist_data = await basic_requests.get_playlists(api_key=self._api_key, api_version=self._api_version,
                                                                loop=self._event_loop,
@@ -67,7 +67,7 @@ class RLS_Client(object):
 
     async def get_seasons(self):
         """
-        :return a list of data_classes.Seasons.
+        :return: a list of data_classes.Seasons.
         """
         raw_seasons_data = await basic_requests.get_seasons(api_key=self._api_key, api_version=self._api_version,
                                                             loop=self._event_loop,
@@ -85,7 +85,7 @@ class RLS_Client(object):
 
     async def get_tiers(self):
         """
-        :return a list of data_classes.Tiers.
+        :return: a list of data_classes.Tiers.
         """
         raw_tiers_data = await basic_requests.get_tiers(api_key=self._api_key, api_version=self._api_version,
                                                         loop=self._event_loop,
@@ -100,10 +100,10 @@ class RLS_Client(object):
 
     async def get_player(self, unique_id: str, platform: str):
         """
-        :param unique_id: The string to search for. Depending on the platform parameter,
+        :param: unique_id: The string to search for. Depending on the platform parameter,
                 this can represent Xbox Gamertag, Xbox user ID, steam 64 ID, or PSN username.
-        :param platform: The platform to search on. This should be one of the platforms defined in rocket_snake/constants.py.
-        :return A data_classes.Player object. If the player couldn't be found, this raises custom_exceptions.APINotFoundError.
+        :param: platform: The platform to search on. This should be one of the platforms defined in rocket_snake/constants.py.
+        :return: A data_classes.Player object. If the player couldn't be found, this raises custom_exceptions.APINotFoundError.
         """
 
         # If the player couldn't be found, the server returns a 404
@@ -117,15 +117,15 @@ class RLS_Client(object):
         player = data_classes.Player(raw_player_data["uniqueId"], raw_player_data["displayName"], platform,
                                      avatar_url=raw_player_data["avatar"], profile_url=raw_player_data["profileUrl"],
                                      signature_url=raw_player_data["signatureUrl"], stats=raw_player_data["stats"],
-                                     ranked_seasons=raw_player_data["rankedSeasons"])
+                                     ranked_seasons=data_classes.RankedSeasons(raw_player_data["rankedSeasons"]))
 
         return player
 
     async def get_players(self, unique_id_platform_pairs: list):
         """
-        :param unique_id_platform_pairs: A list of pairs of unique ids and platforms, that is:
+        :param: unique_id_platform_pairs: A list of pairs of unique ids and platforms, that is:
                 [(unique_id1, platform1), (unique_id2, platform2), ...]
-        :return A list of data_classes.Player objects.
+        :return: A list of data_classes.Player objects.
                  If a player could not be found, the corresponding index in the returned list will be None.
         """
 
@@ -144,15 +144,17 @@ class RLS_Client(object):
                                                                  handle_ratelimiting=self.auto_ratelimit)
 
         players = {
-        raw_player_data["uniqueId"]: data_classes.Player(raw_player_data["uniqueId"], raw_player_data["displayName"],
-                                                         ID_PLATFORM_LUT[req_pair[1]],
-                                                         avatar_url=raw_player_data["avatar"],
-                                                         profile_url=raw_player_data["profileUrl"],
-                                                         signature_url=raw_player_data["signatureUrl"],
-                                                         stats=raw_player_data["stats"],
-                                                         ranked_seasons=raw_player_data["rankedSeasons"]) for
-        raw_player_data, req_pair in
-        list(zip(raw_players_data, unique_id_platform_pairs))}
+            raw_player_data["uniqueId"]: data_classes.Player(raw_player_data["uniqueId"],
+                                                             raw_player_data["displayName"],
+                                                             ID_PLATFORM_LUT[req_pair[1]],
+                                                             avatar_url=raw_player_data["avatar"],
+                                                             profile_url=raw_player_data["profileUrl"],
+                                                             signature_url=raw_player_data["signatureUrl"],
+                                                             stats=raw_player_data["stats"],
+                                                             ranked_seasons=data_classes.RankedSeasons(
+                                                                     raw_player_data["rankedSeasons"]))
+            for raw_player_data, req_pair in
+            list(zip(raw_players_data, unique_id_platform_pairs))}
 
         ordered_players = []
 
@@ -161,14 +163,84 @@ class RLS_Client(object):
 
         return ordered_players
 
-    # TODO
     async def get_ranked_leaderboard(self, playlist):
         """
-        :param playlist: What playlist you want leaderboards for. 
+        Gets the leaderboard for ranked playlists from RLS.
+        :param: playlist: What playlist you want leaderboards for.
                     Has to be a valid playlist id or data_classes.Playlist object.
-        :return The raw leaderboard data.
+        :return: A ordered list of Player objects, where the first one is the one with the highest rank in that playlist and the current season (descending).
         """
-        return await basic_requests.get_ranked_leaderboard(playlist if isinstance(playlist, int) else playlist.id,
-                                                           api_key=self._api_key, api_version=self._api_version,
-                                                           loop=self._event_loop,
-                                                           handle_ratelimiting=self.auto_ratelimit)
+        raw_leaderboard_data = await basic_requests.get_ranked_leaderboard(
+                playlist if isinstance(playlist, int) else playlist.id, api_key=self._api_key,
+                api_version=self._api_version, loop=self._event_loop, handle_ratelimiting=self.auto_ratelimit)
+
+        leaderboard_players = [data_classes.Player(raw_player_data["uniqueId"], raw_player_data["displayName"],
+                                                   raw_player_data["platform"]["name"],
+                                                   avatar_url=raw_player_data["avatar"],
+                                                   profile_url=raw_player_data["profileUrl"],
+                                                   signature_url=raw_player_data["signatureUrl"],
+                                                   stats=raw_player_data["stats"],
+                                                   ranked_seasons=data_classes.RankedSeasons(
+                                                           raw_player_data["rankedSeasons"]))
+                               for raw_player_data in raw_leaderboard_data]
+
+        return leaderboard_players
+
+    async def get_stats_leaderboard(self, stat_type: str):
+        """
+        Gets a list of the top 100 rocket league players according to a specified stat.
+        :param: stat_type: What statistic you want to get a leaderboard for. This has to be one of the LEADERBOARD constants.
+        :return: A ordered list of Player objects, where the first one is the one with the highest stat (descending).
+        """
+        raw_leaderboard_data = await basic_requests.get_stats_leaderboard(
+                stat_type, api_key=self._api_key, api_version=self._api_version, loop=self._event_loop,
+                handle_ratelimiting=self.auto_ratelimit)
+
+        leaderboard_players = [data_classes.Player(raw_player_data["uniqueId"], raw_player_data["displayName"],
+                                                   raw_player_data["platform"]["name"],
+                                                   avatar_url=raw_player_data["avatar"],
+                                                   profile_url=raw_player_data["profileUrl"],
+                                                   signature_url=raw_player_data["signatureUrl"],
+                                                   stats=raw_player_data["stats"],
+                                                   ranked_seasons=data_classes.RankedSeasons(
+                                                           raw_player_data["rankedSeasons"]))
+                               for raw_player_data in raw_leaderboard_data]
+
+        return leaderboard_players
+
+    async def search_player(self, display_name: str, get_all: bool=False):
+        """
+        Searches for a displayname and returns the results.
+        :param: display_name: The displayname you want to search for.
+        :param: get_all: Whether to get all search results or not. Default False.
+            If this is True, the function may take many seconds to return,
+            since it will get all the search results from the api one page at a time.
+            If this is False, the function will only return with the first (called "page" in the http api) 20 results or less.
+        :return: A list of Player objects, where the first one is the top search result.
+        """
+        raw_leader_board_data = [await basic_requests.search_players(display_name, 0, api_key=self._api_key,
+                                        api_version=self._api_version, loop=self._event_loop,
+                                        handle_ratelimiting=self.auto_ratelimit)]
+
+        if get_all:
+            # We calculate the number of pages to get
+            num_pages = raw_leader_board_data[0]["totalResults"] / raw_leader_board_data[0]["maxResultsPerPage"]
+            num_pages = int(num_pages) if int(num_pages) >= num_pages else int(num_pages) + 1
+
+            # We get all the other pages
+            for i in range(1, num_pages):
+                raw_leader_board_data.append(await basic_requests.search_players(display_name, i, api_key=self._api_key,
+                                        api_version=self._api_version, loop=self._event_loop,
+                                        handle_ratelimiting=self.auto_ratelimit))
+
+        # We transform the pages into Player objects
+        sorted_results = []
+        for page in raw_leader_board_data:
+            sorted_results.extend(page["data"])
+
+        return [data_classes.Player(raw_player_data["uniqueId"], raw_player_data["displayName"],
+                                    raw_player_data["platform"]["name"], avatar_url=raw_player_data["avatar"],
+                                    profile_url=raw_player_data["profileUrl"], signature_url=raw_player_data["signatureUrl"],
+                                    stats=raw_player_data["stats"],
+                                    ranked_seasons=data_classes.RankedSeasons(raw_player_data["rankedSeasons"]))
+                for raw_player_data in sorted_results]

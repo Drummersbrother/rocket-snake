@@ -19,3 +19,6 @@ class APIBadResponseCodeError(ConnectionError):
 
 class RateLimitError(APIBadResponseCodeError):
     pass
+
+class InvalidAPIKeyError(APIBadResponseCodeError):
+    pass
