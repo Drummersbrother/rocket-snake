@@ -2,8 +2,8 @@
 Rocket Snake
 ============
 .. image:: https://readthedocs.org/projects/rocket-snake/badge/?version=latest
-:target: http://rocket-snake.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+    :target: http://rocket-snake.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 A python async API client for the https://rocketleaguestats.com/ api.
 Get an api key [here](https://developers.rocketleaguestats.com/).
@@ -23,5 +23,5 @@ Check the docs__ directory or read the online documentation on readthedocs__.
 
 
 .. image:: https://github.com/Drummersbrother/rocket-snake/blob/master/rls_partner_horizontal_large.png
-:target: https://github.com/Drummersbrother/rocket-snake/blob/master/rls_partner_horizontal_large.png
-:alt: This app uses data provided by Rocket League Stats.
+    :target: https://github.com/Drummersbrother/rocket-snake/blob/master/rls_partner_horizontal_large.png
+    :alt: This app uses data provided by Rocket League Stats.
