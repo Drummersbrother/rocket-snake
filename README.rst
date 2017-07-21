@@ -22,6 +22,6 @@ Check the docs__ directory or read the online documentation on readthedocs__.
 .. readthedocs__: http://rocket-snake.readthedocs.io/
 
 
-.. image:: https://github.com/Drummersbrother/rocket-snake/blob/master/rls_partner_horizontal_large.png
-    :target: https://github.com/Drummersbrother/rocket-snake/blob/master/rls_partner_horizontal_large.png
+.. image:: https://github.com/Drummersbrother/rocket-snake/raw/master/rls_partner_horizontal_large.png
+    :target: https://github.com/Drummersbrother/rocket-snake/raw/master/rls_partner_horizontal_large.png
     :alt: This app uses data provided by Rocket League Stats.
