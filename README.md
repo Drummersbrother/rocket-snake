@@ -6,7 +6,7 @@ Get an api key [here](https://developers.rocketleaguestats.com/).
 Not ready for anything but development
 
 ## Documentation?
-Check the [`documentation`](documentation) directory.
+Check the [`docs`](docs) directory.
 
 
-![This app uses data provided by Rocket League Stats.](misc/rls_partner_horizontal_large.png)
+![This app uses data provided by Rocket League Stats.](rls_partner_horizontal_large.png)
