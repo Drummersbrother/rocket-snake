@@ -37,7 +37,7 @@ clean-pyc:
 release: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
-	twine upload dist/* --repository testpypi
+	twine upload dist/*
 
 dist: clean
 	python setup.py sdist
