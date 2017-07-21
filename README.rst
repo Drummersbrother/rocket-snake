@@ -18,8 +18,8 @@ Documentation?
 --------------
 
 Check the docs__ directory or read the online documentation on readthedocs__.
-.. docs__: https://github.com/Drummersbrother/rocket-snake/tree/master/docs
-.. readthedocs__: http://rocket-snake.readthedocs.io/
+    .. docs__: https://github.com/Drummersbrother/rocket-snake/tree/master/docs
+    .. readthedocs__: http://rocket-snake.readthedocs.io/
 
 
 .. image:: https://github.com/Drummersbrother/rocket-snake/raw/master/rls_partner_horizontal_large.png
