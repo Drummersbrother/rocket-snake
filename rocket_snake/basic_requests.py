@@ -108,6 +108,8 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
                         raise custom_exceptions.InvalidAPIKeyError(
                                 "The HTTP response code was 401, which means that your API key wasn't valid.")
                     elif response.status >= 300:
+                        # We make sure we don't leak the API key
+                        kwargs["headers"]["Authorisation"] = "Not included in log to prevent leaking."
                         raise custom_exceptions.APIBadResponseCodeError(
                                 "The HTTP response code was {0}, which is not a good one. \n"
                                 "The response headers were: \n{6}\n"

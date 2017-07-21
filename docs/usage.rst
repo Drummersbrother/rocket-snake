@@ -1,11 +1,11 @@
-========
+=====
 Usage
-========
+=====
 
 To use Rocket Snake in a project::
 
     import asyncio
-    import rocket_snakes as rs
+    import rocket_snake as rs
 
     from pprint import pprint
 
