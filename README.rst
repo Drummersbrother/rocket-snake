@@ -6,8 +6,8 @@ Rocket Snake
     :alt: Documentation Status
 
 A python async API client for the https://rocketleaguestats.com/ api.
-Get an api key [here](https://developers.rocketleaguestats.com/).
-
+Get an api key here_.
+    .. _here: https://developers.rocketleaguestats.com/
 ------
 Status
 ------
