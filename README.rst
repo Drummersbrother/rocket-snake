@@ -5,6 +5,10 @@ Rocket Snake
     :target: http://rocket-snake.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://travis-ci.org/Drummersbrother/rocket-snake.svg?branch=master
+    :target: https://travis-ci.org/Drummersbrother/rocket-snake
+    :alt: Travis Continuous Integration Status
+
 A python async API client for the https://rocketleaguestats.com/ api.
 Get an api key here_.
     .. _here: https://developers.rocketleaguestats.com/
