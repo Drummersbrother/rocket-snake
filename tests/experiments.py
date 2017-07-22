@@ -6,63 +6,62 @@ from pprint import pprint
 
 import rocket_snake
 
-_time_track_stack = []
+with open("tests/config.json", "r") as config_file:
+    config = json.load(config_file)
 
-_total_reqs = 0
+def async_test(f):
+    def wrapper(*args, **kwargs):
+        future = f(*args, **kwargs)
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(future)
+    return wrapper
+
+class AsyncTester(unittest.TestCase):
+    """Test async code easily by inheriting from this."""
+
+    @staticmethod
+    def _do_async_code(coro):
+        return asyncio.get_event_loop().run_until_complete(coro)
+
+    def setUp(self, *args, **kwargs):
+        super().setUp()
+
+        asyncio.set_event_loop(asyncio.new_event_loop())
+
+        self.time_track_stack = []
 
 
-def time_track(text: str = "Time taken: {0} seconds"):
-    global _time_track_stack
+    def tearDown(self, *args, **kwargs):
+        super().setUp()
 
-    if text is None:
-        _time_track_stack.append(time.time())
-    else:
-        last_time = _time_track_stack.pop()
-        time_delta = time.time() - last_time
-        print(text.format(round(time_delta, 3)))
-        return time_delta
+        if not asyncio.get_event_loop().is_closed():
+            asyncio.get_event_loop().close()
+
+    def time_track(self, text: object="Time taken was {0} seconds."):
+
+        if text is None:
+            self.time_track_stack.append(time.time())
+        else:
+            last_time = self.time_track_stack.pop()
+            time_delta = time.time() - last_time
+            print(text.format(round(time_delta, 3)))
+            return time_delta
 
 
-async def tester(config: dict):
-    print("Doing async tests.")
+class Tester(AsyncTester):
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
 
-    my_loop = asyncio.get_event_loop()
+        self.executed_requests = 0
 
-    client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
-
-    pprint(await client.search_player("Mike", get_all=False))
-
-    print("\nMe:")
-    time_track(None)
-    print(str(await client.get_player(config["steam_ids"][0], rocket_snake.STEAM)))
-    time_track("Time taken for single player was {0} seconds.")
-    print("Loads a people:")
-    time_track(None)
-    pprint(await client.get_players(list(zip(config["steam_ids"], [rocket_snake.STEAM] * len(config["steam_ids"])))))
-    time_track("Time taken for batch players was {0} seconds.")
-    print("\nPlaylists:")
-    pprint(await client.get_playlists())
-    print("\nSeasons:")
-    pprint(await client.get_seasons())
-    print("\nPlatforms:")
-    pprint(await client.get_platforms())
-    print("\nTiers:")
-    pprint(await client.get_tiers())
-
-    print("\n")
-    global _total_reqs
-    _total_reqs += 7
-
-    # Testing doing many things
-
-    async def do_multiple(func, times: int = 10, text: str = "Time taken was {0} seconds."):
-        time_track(None)
+    async def do_multiple(self, func, times: int = 10, text: str = "Time taken was {0} seconds."):
+        self.time_track(None)
 
         tasks = [func() for i in range(times)]
 
-        tasks = await asyncio.gather(*tasks, loop=my_loop, return_exceptions=False)
+        tasks = await asyncio.gather(*tasks, loop=asyncio.get_event_loop(), return_exceptions=False)
 
-        gather_time = time_track("Time taken for {0} gather tasks was ".format(times) + "{0} seconds.")
+        gather_time = self.time_track("Time taken for {0} gather tasks was ".format(times) + "{0} seconds.")
 
         print("That means an average of {0} milliseconds per gather request.".format(
             round(1000 * (gather_time / times), 1)))
@@ -70,44 +69,115 @@ async def tester(config: dict):
         total_series_time = 0
 
         for i in range(times):
-            time_track(None)
+            self.time_track(None)
 
             await func()
 
-            total_series_time += time_track(text)
+            total_series_time += self.time_track(text)
 
         print("Time taken for {0} series tasks was {1} seconds.".format(times, round(total_series_time, 3)))
         print("That means an average of {0} milliseconds per series request.".format(
             round(1000 * (total_series_time / times), 1)))
 
-        global _total_reqs
-        _total_reqs += times * 2
+        return times * 2
 
-    bigtasks = [do_multiple(client.get_platforms, text="Platforms took {0} seconds."),
-                do_multiple(client.get_playlists, text="Playlists took {0} seconds."),
-                do_multiple(client.get_seasons, text="Seasons took {0} seconds."),
-                do_multiple(client.get_tiers, text="Tiers took {0} seconds.")
-                ]
+    @async_test
+    async def test_data_endpoints(self):
+        self.time_track(None)
+        print("Testing data endpoints.")
 
-    bigtasks = await asyncio.gather(*bigtasks, loop=my_loop, return_exceptions=False)
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
 
+        print("Playlists:")
+        pprint(await client.get_playlists())
+        print("\nSeasons:")
+        pprint(await client.get_seasons())
+        print("\nPlatforms:")
+        pprint(await client.get_platforms())
+        print("\nTiers:")
+        pprint(await client.get_tiers())
 
+        print("\n")
+        self.executed_requests += 7
 
+        print("Done with testing data endpoints. Time taken was {0} seconds.".format(self.time_track("Time taken for data endpoints was {0} seconds.")))
 
-class Tester(unittest.TestCase):
+    @async_test
+    async def test_player_search(self):
+        self.time_track(None)
+        print("Testing player search.")
 
-    def test_all(self):
-        time_track(None)
-        print("Outside async. Starting...")
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
 
-        with open("tests/config.json", "r") as config_file:
-            config = json.load(config_file)
+        pprint(await client.search_player("Mike", get_all=False))
 
-        my_loop = asyncio.get_event_loop()
+        print("Done with testing player search. Time taken was {0} seconds.".format(self.time_track("Time taken for player search was {0} seconds.")))
 
-        my_loop.run_until_complete(tester(config))
+    @async_test
+    async def test_player_endpoints(self):
+        self.time_track(None)
+        print("Testing player endpoints.")
 
-        print(
-            "Done with experiments, {0} requests were executed. \nThat means an average of {1} milliseconds per request."
-                .format(_total_reqs,
-                        round(1000 * (time_track("Time taken for all experiments was {0} seconds.") / _total_reqs), 1)))
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
+
+        pprint(await client.search_player("Mike", get_all=False))
+
+        print("Me:")
+        self.time_track(None)
+        print(str(await client.get_player(config["steam_ids"][0], rocket_snake.STEAM)))
+        self.time_track("Time taken for single player was {0} seconds.")
+        print("Loads a people:")
+        self.time_track(None)
+        pprint(await client.get_players(
+            list(zip(config["steam_ids"], [rocket_snake.STEAM] * len(config["steam_ids"])))))
+        self.time_track("Time taken for batch players was {0} seconds.")
+
+        print("Done with testing player endpoints. Time taken was {0} seconds.§".format(self.time_track("Time taken for player endpoints was {0} seconds.")))
+
+    @async_test
+    async def test_platforms_throughput(self):
+        self.time_track(None)
+        print("Testing platforms data throughput.")
+
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
+
+        done_requests = await self.do_multiple(client.get_platforms, text="Platforms took {0} seconds.")
+
+        print("Done with platforms data throughput testing, {0} requests were executed. \nThat means an average of {1} milliseconds per request."
+                .format(done_requests, round(1000 * (self.time_track("Time taken for platforms data throughput was {0} seconds.") / done_requests), 1)))
+
+    @async_test
+    async def test_tiers_throughput(self):
+        self.time_track(None)
+        print("Testing tiers data throughput.")
+
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
+
+        done_requests = await self.do_multiple(client.get_tiers, text="tiers took {0} seconds.")
+
+        print("Done with tiers data throughput testing, {0} requests were executed. \nThat means an average of {1} milliseconds per request."
+                .format(done_requests, round(1000 * (self.time_track("Time taken for tiers data throughput was {0} seconds.") / done_requests), 1)))
+
+    @async_test
+    async def test_seasons_throughput(self):
+        self.time_track(None)
+        print("Testing seasons data throughput.")
+
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
+
+        done_requests = await self.do_multiple(client.get_seasons, text="seasons took {0} seconds.")
+
+        print("Done with seasons data throughput testing, {0} requests were executed. \nThat means an average of {1} milliseconds per request."
+                .format(done_requests, round(1000 * (self.time_track("Time taken for seasons data throughput was {0} seconds.") / done_requests), 1)))
+
+    @async_test
+    async def test_playlists_throughput(self):
+        self.time_track(None)
+        print("Testing playlists data throughput.")
+
+        client = rocket_snake.RLS_Client(api_key=config["key"], auto_rate_limit=True)
+
+        done_requests = await self.do_multiple(client.get_playlists, text="playlists took {0} seconds.")
+
+        print("Done with playlists data throughput testing, {0} requests were executed. \nThat means an average of {1} milliseconds per request."
+                .format(done_requests, round(1000 * (self.time_track("Time taken for playlists data throughput was {0} seconds.") / done_requests), 1)))
