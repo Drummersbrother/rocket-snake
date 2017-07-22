@@ -1,0 +1,20 @@
+language: python
+
+sudo: false
+dist: trusty
+
+python:
+  - "3.5"
+  - "3.6"
+
+addons:
+  apt:
+    packages:
+    - tox
+
+install: "pip install -r requirements/test.txt"
+
+script: tox
+
+git:
+  depth: 3
