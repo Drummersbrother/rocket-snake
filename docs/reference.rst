@@ -18,6 +18,15 @@ The Exceptions
     :members:
     :undoc-members:
 
+.. autodata:: rocket_snake.exceptions
+    :members:
+    :undoc-members:
+
+.. autodata:: exceptions
+    :members:
+    :undoc-members:
+
+
 The Constants
 =============
 
@@ -25,10 +34,10 @@ The Constants
     :members:
     :undoc-members:
 
-.. :autodata::: rocket_snake.constants
+.. autodata:: rocket_snake.constants
     :members:
     :undoc-members:
 
-.. :autodata::: constants
+.. autodata:: constants
     :members:
     :undoc-members:
