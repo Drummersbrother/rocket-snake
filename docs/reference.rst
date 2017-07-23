@@ -16,9 +16,11 @@ The Exceptions
 
 .. automodule:: custom_exceptions
     :members:
+    :undoc-members:
 
 The Constants
 =============
 
 .. automodule:: constants
     :members:
+    :undoc-members:
