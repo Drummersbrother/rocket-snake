@@ -124,12 +124,12 @@ class Tester(AsyncTester):
 
         print("Me:")
         self.time_track(None)
-        print(str(await client.get_player(config["steam_ids"][0], rocket_snake.STEAM)))
+        print(str(await client.get_player(config["steam_ids"][0], rocket_snake.constants.STEAM)))
         self.time_track("Time taken for single player was {0} seconds.")
         print("Loads a people:")
         self.time_track(None)
         pprint(await client.get_players(
-            list(zip(config["steam_ids"], [rocket_snake.STEAM] * len(config["steam_ids"])))))
+            list(zip(config["steam_ids"], [rocket_snake.constants.STEAM] * len(config["steam_ids"])))))
         self.time_track("Time taken for batch players was {0} seconds.")
 
         print("Done with testing player endpoints. Time taken was {0} seconds.§".format(self.time_track("Time taken for player endpoints was {0} seconds.")))
