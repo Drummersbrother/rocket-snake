@@ -29,7 +29,7 @@ A subclass of :class:`ConnectionError`, and is raised when the API server can't 
 (e.g. if a player with the requested displayname doesn't exists)
 
 .. class:: exceptions.APIBadResponseCodeError
-A subclass of :class:`ConnectionError`, and is raised when the API returns a response code that isn't successfull,
+A subclass of :class:`ConnectionError`, and is raised when the API returns a response code that isn't successful,
 but can't be identified as a more specific error.
 
 .. class:: exceptions.RatelimitError
