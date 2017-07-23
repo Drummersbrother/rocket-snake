@@ -14,27 +14,25 @@ The Client
 The Exceptions
 ==============
 
-.. currentmodule:: rocket_snake.exceptions
-
 This module (``rocket_snake.exceptions``) defines the exceptions that are specific to Rocket Snake.
 All of them are subclasses of some ``builtins`` exception, but not all of them are direct subclasses.
 
-.. autoclass:: NoAPIKeyError
+.. autoclass:: exceptions.NoAPIKeyError
     :members:
 
-.. autoclass:: APIServerError
+.. autoclass:: exceptions.APIServerError
     :members:
 
-.. autoclass:: APINotFoundError
+.. autoclass:: exceptions.APINotFoundError
     :members:
 
-.. autoclass:: APIBadResponseCodeError
+.. autoclass:: exceptions.APIBadResponseCodeError
     :members:
 
-.. autoclass:: RatelimitError
+.. autoclass:: exceptions.RatelimitError
     :members:
 
-.. autoclass:: InvalidAPIKeyError
+.. autoclass:: exceptions.InvalidAPIKeyError
     :members:
 
 
