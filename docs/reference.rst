@@ -26,5 +26,9 @@ The Constants
     :undoc-members:
 
 .. :autodata::: rocket_snake.constants
+    :members:
+    :undoc-members:
 
 .. :autodata::: constants
+    :members:
+    :undoc-members:
