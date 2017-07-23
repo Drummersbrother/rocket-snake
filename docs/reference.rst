@@ -14,7 +14,7 @@ The Client
 The Exceptions
 ==============
 
-.. automodule:: custom_exceptions
+.. autoclass::
     :members:
     :undoc-members:
 
@@ -23,4 +23,3 @@ The Constants
 
 .. automodule:: constants
     :members:
-    :undoc-members:
