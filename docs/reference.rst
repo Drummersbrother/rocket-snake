@@ -21,9 +21,10 @@ The Exceptions
 The Constants
 =============
 
-.. automodule:: constants
-    :members:
-
-.. autoclass:: constants
+.. autoclass:: rocket_snake.constants
     :members:
     :undoc-members:
+
+.. :autodata::: rocket_snake.constants
+
+.. :autodata::: constants
