@@ -23,3 +23,7 @@ The Constants
 
 .. automodule:: constants
     :members:
+
+.. autoclass:: constants
+    :members:
+    :undoc-members:
