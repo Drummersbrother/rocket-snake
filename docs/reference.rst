@@ -14,6 +14,28 @@ The Client
 The Exceptions
 ==============
 
+.. module:: rocket_snake.exceptions
+
+This module (``rocket_snake.exceptions``) defines the exceptions that are specific to Rocket Snake.
+All of them are subclasses of some ``builtins`` exception, but not all of them are direct subclasses.
+
+.. autoclass:: NoAPIKeyError
+    :members:
+
+.. autoclass:: APIServerError
+    :members:
+
+.. autoclass:: APINotFoundError
+    :members:
+
+.. autoclass:: APIBadResponseCodeError
+    :members:
+
+.. autoclass:: RatelimitError
+    :members:
+
+.. autoclass:: InvalidAPIKeyError
+    :members:
 
 
 The Constants
@@ -21,7 +43,7 @@ The Constants
 
 .. module:: rocket_snake.constants
 
-This module defines constants that are used when requesting information from the API.
+This module (``rocket_snake.constants``) defines constants that are used when requesting information from the API.
 
 .. note:: The value of these should not be hardcoded in your code, since these might change at any time.
 
