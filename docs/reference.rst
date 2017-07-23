@@ -17,23 +17,28 @@ The Exceptions
 This module (``rocket_snake.exceptions``) defines the exceptions that are specific to Rocket Snake.
 All of them are subclasses of some ``builtins`` exception, but not all of them are direct subclasses.
 
-.. autoclass:: exceptions.NoAPIKeyError
-    :members:
+.. class:: exceptions.NoAPIKeyError
+A subclass of :class:`ValueError`, and is raised when an API key isn't provided to the :class:`RLS_Client`.
 
-.. autoclass:: exceptions.APIServerError
-    :members:
+.. class:: exceptions.APIServerError
+A subclass of :class:`ConnectionError`, and is raised when the client gets an error when trying to request something
+from the API server.
 
-.. autoclass:: exceptions.APINotFoundError
-    :members:
+.. class:: exceptions.APINotFoundError
+A subclass of :class:`ConnectionError`, and is raised when the API server can't find what was requested
+(e.g. if a player with the requested displayname doesn't exists)
 
-.. autoclass:: exceptions.APIBadResponseCodeError
-    :members:
+.. class:: exceptions.APIBadResponseCodeError
+A subclass of :class:`ConnectionError`, and is raised when the API returns a response code that isn't successfull,
+but can't be identified as a more specific error.
 
-.. autoclass:: exceptions.RatelimitError
-    :members:
+.. class:: exceptions.RatelimitError
+A subclass of :class:`APIBadResponseCodeError`, and is raised when the :class:`RLS_Client` gets ratelimited by the API
+server but didn't handle ratelimiting at all or not properly.
 
-.. autoclass:: exceptions.InvalidAPIKeyError
-    :members:
+.. class:: exceptions.InvalidAPIKeyError
+A subclass of :class:`APIBadResponseCodeError`, and is raised when the :class:`RLS_Client` has been initialised with
+an invalid API key and tries to execute a request to the API server.
 
 
 The Constants
