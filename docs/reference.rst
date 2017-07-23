@@ -14,7 +14,7 @@ The Client
 The Exceptions
 ==============
 
-.. module:: rocket_snake.exceptions
+.. currentmodule:: rocket_snake.exceptions
 
 This module (``rocket_snake.exceptions``) defines the exceptions that are specific to Rocket Snake.
 All of them are subclasses of some ``builtins`` exception, but not all of them are direct subclasses.
