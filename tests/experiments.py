@@ -26,7 +26,8 @@ class AsyncTester(unittest.TestCase):
     def setUp(self, *args, **kwargs):
         super().setUp()
 
-        asyncio.set_event_loop(asyncio.new_event_loop())
+        self.running_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.running_loop)
 
         self.time_track_stack = []
 
@@ -34,8 +35,8 @@ class AsyncTester(unittest.TestCase):
     def tearDown(self, *args, **kwargs):
         super().setUp()
 
-        if not asyncio.get_event_loop().is_closed():
-            asyncio.get_event_loop().close()
+        if not self.running_loop.is_closed():
+            self.running_loop.close()
 
     def time_track(self, text: object="Time taken was {0} seconds."):
 
