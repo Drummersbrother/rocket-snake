@@ -6,11 +6,11 @@ from .constants import *
 
 class RLS_Client(object):
     """Represents the client, does everything. Initialize with api key and some other settings if you want to.
-       :param: api_key: The key for the https://rocketleaguestats.com api.
+       :param api_key: The key for the https://rocketleaguestats.com api.
                    If not supplied, an InvalidArgumentException will be thrown.
-       :param: auto_rate_limit: If the api should automatically delay execution of request to satisy the default ratelimiting.
+       :param auto_rate_limit: If the api should automatically delay execution of request to satisy the default ratelimiting.
                    Default False. Set to True to enable rate-limiting.
-       :param: event_loop: The asyncio event loop that should be used.
+       :param event_loop: The asyncio event loop that should be used.
                    If not supplied, the default one returned by asyncio.get_event_loop() is used.
        :param:_api_version: What version endpoint to use.
                 Do not change if you don't know what you're doing. Default is 1.
@@ -35,8 +35,8 @@ class RLS_Client(object):
 
     async def get_platforms(self):
         """
-        :return: The supported platforms for the api.
-        :rtype: :class:`list` of :class:`str`.
+        :return The supported platforms for the api.
+        :rtype :class:`list` of :class:`str`.
         """
 
         raw_playlist_data = await basic_requests.get_platforms(api_key=self._api_key, api_version=self._api_version,
@@ -48,8 +48,8 @@ class RLS_Client(object):
 
     async def get_playlists(self):
         """
-        :return: The supported playlists (basically gamemodes, separate per platform) for the api.
-        :rtype: A :class:`list` of :class:`data_classes.Playlists`.
+        :return The supported playlists (basically gamemodes, separate per platform) for the api.
+        :rtype A :class:`list` of :class:`data_classes.Playlists`.
         """
         raw_playlist_data = await basic_requests.get_playlists(api_key=self._api_key, api_version=self._api_version,
                                                                loop=self._event_loop,
@@ -67,9 +67,9 @@ class RLS_Client(object):
 
     async def get_seasons(self):
         """
-        :return: The supported seasons for the api. One of them has ``Season.time_ended == None``, and ``Season.is_current == True``
+        :return The supported seasons for the api. One of them has ``Season.time_ended == None``, and ``Season.is_current == True``
             which means it's the current season.
-        :rtype: A :class:`list` of :class:`data_classes.Seasons`.
+        :rtype A :class:`list` of :class:`data_classes.Seasons`.
         """
         raw_seasons_data = await basic_requests.get_seasons(api_key=self._api_key, api_version=self._api_version,
                                                             loop=self._event_loop,
@@ -87,8 +87,8 @@ class RLS_Client(object):
 
     async def get_tiers(self):
         """
-        :return: The supported tiers for the api.
-        :rtype: A :class:`list` of :class:`data_classes.Tiers`.
+        :return The supported tiers for the api.
+        :rtype A :class:`list` of :class:`data_classes.Tiers`.
         """
         raw_tiers_data = await basic_requests.get_tiers(api_key=self._api_key, api_version=self._api_version,
                                                         loop=self._event_loop,
@@ -104,13 +104,13 @@ class RLS_Client(object):
     async def get_player(self, unique_id: str, platform: str):
         """
         Gets a single player from the api for a single player.
-        :param: unique_id: The string to search for. Depending on the platform parameter,
+        :param unique_id: The string to search for. Depending on the platform parameter,
                 this can represent Xbox Gamertag, Xbox user ID, steam 64 ID, or PSN username.
-        :type: unique_id: :class:`str`.
-        :param: platform: The platform to search on. This should be one of the platforms defined in rocket_snake/constants.py.
-        :type: platform: One of the platform constants in :module:`rocket_snake.constants`, they are all :class:`str`.
-        :return: A data_classes.Player object.
-        :rtype: A :class:`data_classes.Player`, which is the player that was requested.
+        :type unique_id: :class:`str`.
+        :param platform: The platform to search on. This should be one of the platforms defined in rocket_snake/constants.py.
+        :type platform: One of the platform constants in :module:`rocket_snake.constants`, they are all :class:`str`.
+        :return A data_classes.Player object.
+        :rtype A :class:`data_classes.Player`, which is the player that was requested.
         :raise: :class:`exceptions.APINotFoundError` if the player could be found.
         """
 
@@ -137,13 +137,13 @@ class RLS_Client(object):
             This is because the API automatically updates the users' data from Rocket League itself, and sometimes doesn't.
             There is currently no way of finding out how long using this function will take, as the API sometimes doesn't
             update the users' data, and therefore returns the data quickly.
-        :param: unique_id_platform_pairs: The users you want to search for. These are specified by unique id and platform.
+        :param unique_id_platform_pairs: The users you want to search for. These are specified by unique id and platform.
         :type unique_id_platform_pairs: A :class:`list` of :tuples:`tuple`s of unique ids and platform,
             where both the unique ids and platforms are strings. The platform strings can be found in :module:`rocket_snake.constants`,
             and the unique ids are of the same type as what :function:`RLS_Client.get_player` uses.
             Example: ``[("ExampleUniqueID1", constants.STEAM), ("ExampleUniqueID1OnXBOX", constants.XBOX1)]``
-        :return: The players that could be found.
-        :rtype: A :class:`list` of :class:`data_classes.Player` objects.
+        :return The players that could be found.
+        :rtype A :class:`list` of :class:`data_classes.Player` objects.
             If a player could not be found, the corresponding index (the index in the ``unique_id_platform_pairs`` :class:`list`)
             in the returned :class:`list` will be None.
         """
@@ -185,11 +185,11 @@ class RLS_Client(object):
     async def get_ranked_leaderboard(self, playlist):
         """
         Gets the leaderboard for ranked playlists from RLS.
-        :param: playlist: The playlist you want to get a leaderboard for.
-        :type: playlist: A :class:`data_classes.Playlist` or :class:`int` if you pass a playlist id.
-        :return: The leaderboard, that is, the top players in the requested ranked playlist.
+        :param playlist: The playlist you want to get a leaderboard for.
+        :type playlist: A :class:`data_classes.Playlist` or :class:`int` if you pass a playlist id.
+        :return The leaderboard, that is, the top players in the requested ranked playlist.
             The list is usually around 100 players long.
-        :rtype: A :class:`list` of :class:`data_classes.Player` objects,
+        :rtype A :class:`list` of :class:`data_classes.Player` objects,
         where the first one is the one with the highest rank in the requested playlist and current season, and the list is descending.
         """
         raw_leaderboard_data = await basic_requests.get_ranked_leaderboard(
@@ -211,10 +211,10 @@ class RLS_Client(object):
     async def get_stats_leaderboard(self, stat_type: str):
         """
         Gets a list of the top 100 rocket league players according to a specified stat.
-        :param: stat_type: What statistic you want to get a leaderboard for.
-        :type: stat_type: One of the ``LEADERBOARD_*`` constants in :module:`rocket_snake.constants`.
-        :return: A ordered list of Player objects, where the first one is the one with the highest stat (descending).
-        :rtype: A :class:`list` of :class:`data_classes.Player` objects,
+        :param stat_type: What statistic you want to get a leaderboard for.
+        :type stat_type: One of the ``LEADERBOARD_*`` constants in :module:`rocket_snake.constants`.
+        :return A ordered list of Player objects, where the first one is the one with the highest stat (descending).
+        :rtype A :class:`list` of :class:`data_classes.Player` objects,
         where the first one is the one with the highest amount of the requested stat, and the list is descending.
         """
         raw_leaderboard_data = await basic_requests.get_stats_leaderboard(
@@ -236,15 +236,15 @@ class RLS_Client(object):
     async def search_player(self, display_name: str, get_all: bool=False):
         """
         Searches for a displayname and returns the results, this does not search all of Rocket League, but only the https://rocketleaguestats.com database.
-        :param: display_name: The displayname you want to search for.
-        :type: display_name: :class:`str`
-        :param: get_all: Whether to get all search results or not.
+        :param display_name: The displayname you want to search for.
+        :type display_name: :class:`str`
+        :param get_all: Whether to get all search results or not.
             If this is True, the function may take many seconds to return,
             since it will get all the search results from the API one page at a time.
             If this is False, the function will only return with the first (called "page" in the http api) 20 results or less.
-        :type: :class:`bool`, default is ``False``.
-        :return: The search results.
-        :rtype: A :class:`list` of :class:`data_classes.Player` objects, where the first one is the top result.
+        :type :class:`bool`, default is ``False``.
+        :return The search results.
+        :rtype A :class:`list` of :class:`data_classes.Player` objects, where the first one is the top result.
             If the search didn't return any players, this :class:`list` is empty (``[]``).
         """
         raw_leader_board_data = [await basic_requests.search_players(display_name, 0, api_key=self._api_key,
