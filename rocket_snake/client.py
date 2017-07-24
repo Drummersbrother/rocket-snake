@@ -5,19 +5,21 @@ from .constants import *
 
 
 class RLS_Client(object):
-    """Represents the client, does everything. Initialize with api key and some other settings if you want to.
-        :param api_key: The key for the https://rocketleaguestats.com api.
-                    If not supplied, an InvalidArgumentException will be thrown.
-        :param auto_rate_limit: If the api should automatically delay execution of request to satisfy the default ratelimiting.
-                    When this is True automatic ratelimiting is enabled.
-        :param event_loop: The asyncio event loop that should be used.
-                    If not supplied, the default one returned by ``asyncio.get_event_loop()`` is used.
-        :param _api_version: What version endpoint to use.
-                 Do not change if you don't know what you're doing.
-        :type api_key: :class:`str`
-        :type auto_rate_limit: :class:`bool`, default is ``True``.
-        :type event_loop: :class:`asyncio.AbstractEventLoop`
-        :param _api_version: :class:`int`, default is ``1``.
+    """
+    Represents the client, does everything. Initialize with api key and some other settings if you want to.
+
+    :param api_key: The key for the https://rocketleaguestats.com api.
+                If not supplied, an InvalidArgumentException will be thrown.
+    :param auto_rate_limit: If the api should automatically delay execution of request to satisfy the default ratelimiting.
+                When this is True automatic ratelimiting is enabled.
+    :param event_loop: The asyncio event loop that should be used.
+                If not supplied, the default one returned by ``asyncio.get_event_loop()`` is used.
+    :param _api_version: What version endpoint to use.
+             Do not change if you don't know what you're doing.
+    :type api_key: :class:`str`
+    :type auto_rate_limit: :class:`bool`, default is ``True``.
+    :type event_loop: :class:`asyncio.AbstractEventLoop`
+    :param _api_version: :class:`int`, default is ``1``.
 
     """
 
@@ -41,6 +43,7 @@ class RLS_Client(object):
     async def get_platforms(self):
         """
         Gets the supported platforms for the api.
+
         :return The platforms.
         :rtype :class:`list` of :class:`str`.
         """
@@ -54,6 +57,8 @@ class RLS_Client(object):
 
     async def get_playlists(self):
         """
+        Gets the supported playlists for the api.
+
         :return The supported playlists (basically gamemodes, separate per platform) for the api.
         :rtype A :class:`list` of :class:`data_classes.Playlists`.
         """
@@ -73,6 +78,8 @@ class RLS_Client(object):
 
     async def get_seasons(self):
         """
+        Gets the supported seasons for the api.
+
         :return The supported seasons for the api. One of them has ``Season.time_ended == None``, and ``Season.is_current == True``
             which means it's the current season.
         :rtype A :class:`list` of :class:`data_classes.Seasons`.
@@ -93,6 +100,8 @@ class RLS_Client(object):
 
     async def get_tiers(self):
         """
+        Gets the supported tiers for the api.
+
         :return The supported tiers for the api.
         :rtype A :class:`list` of :class:`data_classes.Tiers`.
         """
@@ -114,9 +123,9 @@ class RLS_Client(object):
         :param unique_id: The string to search for. Depending on the platform parameter,
                 this can represent Xbox Gamertag, Xbox user ID, steam 64 ID, or PSN username.
         :param platform: The platform to search on. This should be one of the platforms defined in rocket_snake/constants.py.
-        :type platform: One of the platform constants in :module:`rocket_snake.constants`, they are all :class:`str`.
+        :type platform: One of the platform constants in :mod:`rocket_snake.constants`, they are all :class:`str`.
         :type unique_id: :class:`str`.
-        :return A data_classes.Player object.
+        :return A :class:`data_classes.Player` object.
         :rtype A :class:`data_classes.Player`, which is the player that was requested.
         :raise: :class:`exceptions.APINotFoundError` if the player could be found.
         """
@@ -138,7 +147,7 @@ class RLS_Client(object):
 
     async def get_players(self, unique_id_platform_pairs: list):
         """
-        Does what :function:`RLS_Client.get_player` does but for up to 10 players at once.
+        Does what :func:`RLS_Client.get_player` does but for up to 10 players at once.
 
         .. warning::
             This function can take really long to execute, sometimes up to 15 seconds or more.
@@ -149,7 +158,7 @@ class RLS_Client(object):
         :param unique_id_platform_pairs: The users you want to search for. These are specified by unique id and platform.
         :type unique_id_platform_pairs: A :class:`list` of :tuples:`tuple`s of unique ids and platform,
             where both the unique ids and platforms are strings. The platform strings can be found in :mod:`rocket_snake.constants`,
-            and the unique ids are of the same type as what :function:`RLS_Client.get_player` uses.
+            and the unique ids are of the same type as what :func:`RLS_Client.get_player` uses.
             Example: ``[("ExampleUniqueID1", constants.STEAM), ("ExampleUniqueID1OnXBOX", constants.XBOX1)]``
 
         :return The players that could be found.
