@@ -12,7 +12,7 @@ with open("tests/config.json", "r") as config_file:
 def async_test(f):
     def wrapper(*args, **kwargs):
         future = f(*args, **kwargs)
-        loop = asyncio.new_event_loop()
+        loop = args[0].running_loop
         loop.run_until_complete(future)
     return wrapper
 
