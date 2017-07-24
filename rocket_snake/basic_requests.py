@@ -83,7 +83,7 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
             await asyncio.sleep(throughput_time_seconds - (time.time() - ratelimit_key_time_map[api_key]))
 
     try:
-        with async_timeout.timeout(timeout_seconds):
+        with async_timeout.timeout(timeout_seconds, loop=loop):
             async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False), loop=loop) as session:
                 async with getattr(session, method)(api_url + endpoint, *args, **kwargs) as response:
                     response_text = await response.text()
