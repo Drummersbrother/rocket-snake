@@ -84,7 +84,7 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
 
     try:
         with async_timeout.timeout(timeout_seconds):
-            async with aiohttp.ClientSession(loop=loop) as session:
+            async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False), loop=loop) as session:
                 async with getattr(session, method)(api_url + endpoint, *args, **kwargs) as response:
                     response_text = await response.text()
                     if response.status == 429:
