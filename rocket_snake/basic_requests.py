@@ -53,7 +53,7 @@ async def basic_request(loop: asyncio.AbstractEventLoop, api_key: str, timeout_s
 
     global ratelimit_key_queue_map, ratelimit_key_time_map
 
-    api_url = "https://api.rocketleaguestats.com/v"
+    api_url = "http://api.rocketleaguestats.com/v"
 
     if "headers" not in kwargs:
         kwargs["headers"] = {}
