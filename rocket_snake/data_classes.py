@@ -72,7 +72,7 @@ class RankedSeason(dict):
         if isinstance(item, Playlist):
             return self[item.id]
         else:
-            return self[item]
+            return super().__getitem__(item)
 
     def __str__(self):
         return "".join(["\n\tRanked season on playlist {0}: {1}".format(playlist_id, str(rank)) for playlist_id, rank in
@@ -81,7 +81,7 @@ class RankedSeason(dict):
 
 class RankedSeasons(object):
     """
-    Represents the ranked data of a user. These can be subscripted by season id or Season object to get data for a 
+    Represents the ranked data of a user. These can be indexed by season id or Season object to get data for a
     specific season (a RankedSeason object). This object defines some method to be more similar to a dictionary.
     Do not create these yourself.
     :var data: The raw dict to convert into this object.
