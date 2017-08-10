@@ -2,7 +2,7 @@
 
 __author__ = 'Hugo Berg'
 __email__ = 'hb11002@icloud.com'
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 import rocket_snake.constants as constants
 import rocket_snake.custom_exceptions as exceptions

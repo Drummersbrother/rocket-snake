@@ -27,11 +27,11 @@ requirements = [str(ir.req) for ir in parsed_requirements]
 
 setup(
     name='rocket_snake',
-    version='0.1.4',
+    version='0.1.5',
     description="Rocket Snake is a client library to access the rocketleaguestats.com API in python with async code.",
     long_description=readme + '\n\n' + history,
     author="Hugo Berg",
-    author_email='hb11002@icloud.com',
+    author_email='ilykxar@gmail.com',
     url='https://github.com/drummersbrother/rocket_snake',
     packages=[
         'rocket_snake',
@@ -44,7 +44,7 @@ setup(
     zip_safe=False,
     keywords='rocket_snake',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
