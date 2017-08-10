@@ -3,6 +3,12 @@
 History
 -------
 
+0.1.5 (2017-08-10)
+------------------
+
+* Fix possible authorisation key leak in error logs.
+* Fix indexing on :class:`RankedSeason` objects.
+
 0.1.4 (2017-07-24)
 ------------------
 
